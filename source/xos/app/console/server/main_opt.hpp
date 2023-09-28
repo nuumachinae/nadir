@@ -23,6 +23,19 @@
 
 #include "xos/app/console/base/main.hpp"
 
+#define XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPT "receive"
+#define XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTARG_REQUIRED MAIN_OPT_ARGUMENT_OPTIONAL
+#define XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTARG_RESULT 0
+#define XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTARG "[string]"
+#define XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTUSE "receive request"
+#define XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTVAL_S "R::"
+#define XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTVAL_C 'R'
+#define XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTION \
+   {XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPT, \
+    XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTARG_REQUIRED, \
+    XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTARG_RESULT, \
+    XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTVAL_C}, \
+
 #define XOS_APP_CONSOLE_SERVER_MAIN_REQUEST_OPT "request"
 #define XOS_APP_CONSOLE_SERVER_MAIN_REQUEST_OPTARG_REQUIRED MAIN_OPT_ARGUMENT_OPTIONAL
 #define XOS_APP_CONSOLE_SERVER_MAIN_REQUEST_OPTARG_RESULT 0
@@ -51,10 +64,12 @@
 
 ///////////////////////////////////////////////////////////////////////
 #define XOS_APP_CONSOLE_SERVER_MAIN_OPTIONS_CHARS_EXTEND \
+   XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTVAL_S \
    XOS_APP_CONSOLE_SERVER_MAIN_REQUEST_OPTVAL_S \
    XOS_APP_CONSOLE_SERVER_MAIN_RESPONSE_OPTVAL_S \
 
 #define XOS_APP_CONSOLE_SERVER_MAIN_OPTIONS_OPTIONS_EXTEND \
+   XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTION \
    XOS_APP_CONSOLE_SERVER_MAIN_REQUEST_OPTION \
    XOS_APP_CONSOLE_SERVER_MAIN_RESPONSE_OPTION \
 
@@ -125,6 +140,69 @@ protected:
             err = extends::run(argc, argv, env);
         }
         return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+
+    /// on...receive_option...
+    virtual int on_get_receive_option
+    (const char_t* optarg, int optind, int argc, char_t**argv, char_t**env) {
+        int err = 0;
+        return err;
+    }
+    virtual int on_receive_option_get
+    (const char_t* optarg, int optind, int argc, char_t**argv, char_t**env) {
+        int err = 0;
+        if (!(err = this->set_input_request_run(argc, argv, env))) {
+            if (!(err = this->input_request_run_set(argc, argv, env))) {
+            } else {
+            }
+        } else {
+        }
+        return err;
+    }
+    virtual int on_set_receive_option
+    (const char_t* optarg, int optind, int argc, char_t**argv, char_t**env) {
+        int err = 0;
+        if ((optarg) && (optarg[0])) {
+        } else {
+        }
+        return err;
+    }
+    virtual int on_receive_option_set
+    (const char_t* optarg, int optind, int argc, char_t**argv, char_t**env) {
+        int err = 0;
+        if ((optarg) && (optarg[0])) {
+        } else {
+        }
+        return err;
+    }
+    virtual int on_receive_option
+    (int optval, const char_t* optarg, const char_t* optname,
+     int optind, int argc, char_t**argv, char_t**env) {
+        int err = 0;
+        if ((optarg) && (optarg[0])) {
+            if (!(err = on_set_receive_option(optarg, optind, argc, argv, env))) {
+                if (!(err = on_receive_option_set(optarg, optind, argc, argv, env))) {
+                } else {
+                }
+            } else {
+            }
+        } else {
+            if (!(err = on_get_receive_option(optarg, optind, argc, argv, env))) {
+                if (!(err = on_receive_option_get(optarg, optind, argc, argv, env))) {
+                } else {
+                }
+            } else {
+            }
+        }
+        return err;
+    }
+    virtual const char_t* receive_option_usage(const char_t*& optarg, const struct option* longopt) {
+        const char_t* chars = XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTUSE;
+        optarg = XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTARG;
+        return chars;
     }
 
     /// on...request_option...
@@ -274,6 +352,10 @@ protected:
         int err = 0;
         switch(optval) {
 
+        case XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTVAL_C:
+            err = this->on_receive_option(optval, optarg, optname, optind, argc, argv, env);
+            break;
+
         case XOS_APP_CONSOLE_SERVER_MAIN_REQUEST_OPTVAL_C:
             err = this->on_request_option(optval, optarg, optname, optind, argc, argv, env);
             break;
@@ -291,6 +373,10 @@ protected:
     virtual const char_t* option_usage(const char_t*& optarg, const struct option* longopt) {
         const char_t* chars = "";
         switch(longopt->val) {
+
+        case XOS_APP_CONSOLE_SERVER_MAIN_RECEIVE_OPTVAL_C:
+            chars = this->receive_option_usage(optarg, longopt);
+            break;
 
         case XOS_APP_CONSOLE_SERVER_MAIN_REQUEST_OPTVAL_C:
             chars = this->request_option_usage(optarg, longopt);
@@ -325,6 +411,9 @@ protected:
         argv = _argv;
         return _args;
     }
+
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
 
 protected:
 }; /// class main_optt 

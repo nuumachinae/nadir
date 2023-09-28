@@ -16,7 +16,7 @@
 ///   File: input.hpp
 ///
 /// Author: $author$
-///   Date: 6/20/2023
+///   Date: 6/20/2023, 9/28/2023
 //////////////////////////////////////////////////////////////////////////
 #ifndef XOS_CONSOLE_INPUT_HPP
 #define XOS_CONSOLE_INPUT_HPP
@@ -34,6 +34,7 @@ ssize_t in(char *what, size_t size);
 ssize_t inf(file_t f, const char *format, ...);
 ssize_t infv(file_t f, const char *format, va_list va);
 ssize_t in(file_t f, char *what, size_t size);
+ssize_t in_fill(file_t f);
 
 /// class inputt
 template

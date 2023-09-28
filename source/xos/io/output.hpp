@@ -16,14 +16,13 @@
 ///   File: output.hpp
 ///
 /// Author: $author$
-///   Date: 6/19/2023
+///   Date: 6/19/2023, 9/26/2023
 //////////////////////////////////////////////////////////////////////////
 #ifndef XOS_IO_OUTPUT_HPP
 #define XOS_IO_OUTPUT_HPP
 
 #include "xos/base/to_string.hpp"
 #include "xos/base/locked.hpp"
-
 #include <stdarg.h>
 
 namespace xos {

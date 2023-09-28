@@ -23,6 +23,18 @@
 
 #include "xos/app/console/base/main.hpp"
 
+#define XOS_APP_CONSOLE_PROTOCOL_DEFAULT_REQUEST \
+    "GET / HTTP/1.0\r\n" \
+    "Content-Type:text/plain\r\n" \
+    "Content-Length:7\r\n\r\n" \
+    "hello\r\n"
+
+#define XOS_APP_CONSOLE_PROTOCOL_DEFAULT_RESPONSE \
+    "HTTP/1.0 200 Ok\r\n" \
+    "Content-Type:text/plain\r\n" \
+    "Content-Length:7\r\n\r\n" \
+    "hello\r\n"
+
 ///////////////////////////////////////////////////////////////////////
 #define XOS_APP_CONSOLE_PROTOCOL_BASE_MAIN_OPTIONS_CHARS_EXTEND \
 
@@ -79,7 +91,18 @@ public:
       start_response_(start_request_),
 
       stop_request_("stop"),
-      stop_response_(stop_request_) {
+      stop_response_(stop_request_),
+      
+      default_request_(XOS_APP_CONSOLE_PROTOCOL_DEFAULT_REQUEST),
+      default_response_(XOS_APP_CONSOLE_PROTOCOL_DEFAULT_RESPONSE),
+    
+      request_(default_request_), 
+      response_(default_response_),
+
+      crlf2_endof_message_("\r\n\r\n"), 
+      crlf_endof_message_("\r\n"), 
+      cr_endof_message_("\r"), 
+      lf_endof_message_("\n") {
     }
     virtual ~main_optt() {
     }
@@ -537,11 +560,153 @@ protected:
         return (string_t&)stop_response_;
     }
 
+    ///////////////////////////////////////////////////////////////////////
+    /// ...default_request
+    virtual string_t& set_default_request(const string_t& to) {
+        string_t& default_request = this->default_request();
+        default_request.assign(to);
+        return default_request;
+    }
+    virtual string_t& set_default_request(const char_t* to) {
+        string_t& default_request = this->default_request();
+        default_request.assign(to);
+        return default_request;
+    }
+    virtual string_t& set_default_request(const char_t* to, size_t length) {
+        string_t& default_request = this->default_request();
+        default_request.assign(to, length);
+        return default_request;
+    }
+    virtual string_t& default_request() const {
+        return (string_t&)default_request_;
+    }
+    ///////////////////////////////////////////////////////////////////////
+    /// ...default_response
+    virtual string_t& set_default_response(const string_t& to) {
+        string_t& default_response = this->default_response();
+        default_response.assign(to);
+        return default_response;
+    }
+    virtual string_t& set_default_response(const char_t* to, size_t length) {
+        string_t& default_response = this->default_response();
+        default_response.assign(to, length);
+        return default_response;
+    }
+    virtual string_t& set_default_response(const char_t* to) {
+        string_t& default_response = this->default_response();
+        default_response.assign(to);
+        return default_response;
+    }
+    virtual string_t& default_response() const {
+        return (string_t&)default_response_;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...endof_message
+    /// ...
+    /// ...crlf2_endof_message
+    virtual string_t& set_crlf2_endof_message(const string_t& to) {
+        string_t& crlf2_endof_message = this->crlf2_endof_message();
+        crlf2_endof_message.assign(to);
+        return crlf2_endof_message;
+    }
+    virtual string_t& set_crlf2_endof_message(const char_t* to, size_t length) {
+        string_t& crlf2_endof_message = this->crlf2_endof_message();
+        crlf2_endof_message.assign(to, length);
+        return crlf2_endof_message;
+    }
+    virtual string_t& set_crlf2_endof_message(const char_t* to) {
+        string_t& crlf2_endof_message = this->crlf2_endof_message();
+        crlf2_endof_message.assign(to);
+        return crlf2_endof_message;
+    }
+    virtual string_t& crlf2_endof_message() const {
+        return (string_t&)crlf2_endof_message_;
+    }
+    ///////////////////////////////////////////////////////////////////////
+    /// ...crlf_endof_message
+    virtual string_t& set_crlf_endof_message(const string_t& to) {
+        string_t& crlf_endof_message = this->crlf_endof_message();
+        crlf_endof_message.assign(to);
+        return crlf_endof_message;
+    }
+    virtual string_t& set_crlf_endof_message(const char_t* to, size_t length) {
+        string_t& crlf_endof_message = this->crlf_endof_message();
+        crlf_endof_message.assign(to, length);
+        return crlf_endof_message;
+    }
+    virtual string_t& set_crlf_endof_message(const char_t* to) {
+        string_t& crlf_endof_message = this->crlf_endof_message();
+        crlf_endof_message.assign(to);
+        return crlf_endof_message;
+    }
+    virtual string_t& crlf_endof_message() const {
+        return (string_t&)crlf_endof_message_;
+    }
+    ///////////////////////////////////////////////////////////////////////
+    /// ...cr_endof_message
+    virtual string_t& set_cr_endof_message(const string_t& to) {
+        string_t& cr_endof_message = this->cr_endof_message();
+        cr_endof_message.assign(to);
+        return cr_endof_message;
+    }
+    virtual string_t& set_cr_endof_message(const char_t* to, size_t length) {
+        string_t& cr_endof_message = this->cr_endof_message();
+        cr_endof_message.assign(to, length);
+        return cr_endof_message;
+    }
+    virtual string_t& set_cr_endof_message(const char_t* to) {
+        string_t& cr_endof_message = this->cr_endof_message();
+        cr_endof_message.assign(to);
+        return cr_endof_message;
+    }
+    virtual string_t& cr_endof_message() const {
+        return (string_t&)cr_endof_message_;
+    }
+    ///////////////////////////////////////////////////////////////////////
+    /// ...lf_endof_message
+    virtual string_t& set_lf_endof_message(const string_t& to) {
+        string_t& lf_endof_message = this->lf_endof_message();
+        lf_endof_message.assign(to);
+        return lf_endof_message;
+    }
+    virtual string_t& set_lf_endof_message(const char_t* to, size_t length) {
+        string_t& lf_endof_message = this->lf_endof_message();
+        lf_endof_message.assign(to, length);
+        return lf_endof_message;
+    }
+    virtual string_t& set_lf_endof_message(const char_t* to) {
+        string_t& lf_endof_message = this->lf_endof_message();
+        lf_endof_message.assign(to);
+        return lf_endof_message;
+    }
+    virtual string_t& lf_endof_message() const {
+        return (string_t&)lf_endof_message_;
+    }
+    /// ...
+    /// ...endof_message
+    ///////////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...request
+    virtual string_t& request() const {
+        return (string_t&)request_;
+    }
+    ///////////////////////////////////////////////////////////////////////
+    /// ...response
+    virtual string_t& response() const {
+        return (string_t&)response_;
+    }
+
 protected:
     string_t hello_request_, hello_response_, 
              restart_request_, restart_response_, 
              start_request_, start_response_, 
-             stop_request_, stop_response_;
+             stop_request_, stop_response_, 
+             default_request_, default_response_,
+             request_, response_,
+             crlf2_endof_message_, crlf_endof_message_, 
+             cr_endof_message_, lf_endof_message_;
 }; /// class main_optt 
 typedef main_optt<> main_opt;
 

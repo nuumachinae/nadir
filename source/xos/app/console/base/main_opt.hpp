@@ -236,6 +236,73 @@ protected:
     }
 
     ///////////////////////////////////////////////////////////////////////
+    /// ...input_request_run
+    int (derives::*input_request_run_)(int argc, char_t** argv, char_t** env);
+    virtual int input_request_run(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (input_request_run_) {
+            err = (this->*input_request_run_)(argc, argv, env);
+        } else {
+            err = default_input_request_run(argc, argv, env);
+        }
+        return err;
+    }
+    virtual int default_input_request_run(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        string_t& request = this->request();
+        LOGGER_IS_LOGGED_INFO("!(err = all_input_request_run(request, argc, argv, env))...");
+        if (!(err = all_input_request_run(request, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_input_request_run(request, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("!(err = all_process_request_run(argc, argv, env))...");
+            if (!(err = all_process_request_run(argc, argv, env))) {
+                LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_process_request_run(argc, argv, env))");
+            } else {
+                LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_process_request_run(argc, argv, env))");
+            }
+        } else {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_input_request_run(request, argc, argv, env))");
+        }
+        return err;
+    }
+    virtual int before_input_request_run(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int after_input_request_run(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int all_input_request_run(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = before_input_request_run(argc, argv, env))) {
+            int err2 = 0;
+            err = input_request_run(argc, argv, env);
+            if ((err2 = after_input_request_run(argc, argv, env))) {
+                if (!(err)) err = err2;
+            }
+        }
+        return err;
+    }
+    virtual int set_input_request_run(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        run_ = &derives::all_input_request_run;
+        return err;
+    }
+    virtual int input_request_run_set(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int unset_input_request_run(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        run_ = 0;
+        return err;
+    }
+    virtual int input_request_run_unset(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
     /// ...output_request_run
     int (derives::*output_request_run_)(int argc, char_t** argv, char_t** env);
     virtual int output_request_run(int argc, char_t** argv, char_t** env) {
@@ -587,6 +654,40 @@ protected:
     }
 
     ///////////////////////////////////////////////////////////////////////
+    /// ...input_request_run
+    virtual int input_request_run(string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        LOGGER_IS_LOGGED_INFO("!(err = all_input_message_run(request, argc, argv, env))...");
+        if (!(err = all_input_message_run(request, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(err = all_input_message_run(request, argc, argv, env))");
+        }
+        return err;
+    }
+    virtual int before_input_request_run(string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int after_input_request_run(string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        LOGGER_IS_LOGGED_INFO("!(err = all_prepare_request_input_run(request, argc, argv, env))...");
+        if (!(err = all_prepare_request_input_run(request, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(err = all_prepare_request_input_run(request, argc, argv, env))");
+        }
+        return err;
+    }
+    virtual int all_input_request_run(string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = before_input_request_run(request, argc, argv, env))) {
+            int err2 = 0;
+            err = input_request_run(request, argc, argv, env);
+            if ((err2 = after_input_request_run(request, argc, argv, env))) {
+                if (!(err)) err = err2;
+            }
+        }
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
     /// ...output_request_run
     virtual int output_request_run(string_t& request, int argc, char_t** argv, char_t** env) {
         int err = 0;
@@ -614,6 +715,32 @@ protected:
             int err2 = 0;
             err = output_request_run(request, argc, argv, env);
             if ((err2 = after_output_request_run(request, argc, argv, env))) {
+                if (!(err)) err = err2;
+            }
+        }
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...prepare_request_input_run
+    virtual int prepare_request_input_run(string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int before_prepare_request_input_run(string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int after_prepare_request_input_run(string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int all_prepare_request_input_run(string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = before_prepare_request_input_run(request, argc, argv, env))) {
+            int err2 = 0;
+            err = prepare_request_input_run(request, argc, argv, env);
+            if ((err2 = after_prepare_request_input_run(request, argc, argv, env))) {
                 if (!(err)) err = err2;
             }
         }
@@ -710,7 +837,10 @@ protected:
     /// ...output_message_run
     virtual int output_message_run(string_t& message, int argc, char_t** argv, char_t** env) {
         int err = 0;
-        this->outln(message);
+        if (!(err = all_prepare_message_to_output_run(message, argc, argv, env))) {
+            this->outln(message);
+        } else {
+        }
         return err;
     }
     virtual int before_output_message_run(string_t& message, int argc, char_t** argv, char_t** env) {
@@ -730,6 +860,324 @@ protected:
                 if (!(err)) err = err2;
             }
         }
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...prepare_message_to_output_run
+    virtual int prepare_message_to_output_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int before_prepare_message_to_output_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int after_prepare_message_to_output_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int all_prepare_message_to_output_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = before_prepare_message_to_output_run(message, argc, argv, env))) {
+            int err2 = 0;
+            err = prepare_message_to_output_run(message, argc, argv, env);
+            if ((err2 = after_prepare_message_to_output_run(message, argc, argv, env))) {
+                if (!(err)) err = err2;
+            }
+        }
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...input_message_run
+    virtual int input_message_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        char_t c = 0;
+        in_reader_t reader(*this);
+        string_t message_assign;
+        
+        LOGGER_IS_LOGGED_INFO("!(err = read(message_assign, c, reader, argc, argv, env))...");
+        if (!(err = read(message_assign, c, reader, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = read(message_assign, c, reader, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("message.assign(message_assign)...");
+            message.assign(message_assign);
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed !(" << err << " = read(message_assign, c, reader, argc, argv, env))");
+        }
+        return err;
+    }
+    virtual int before_input_message_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int after_input_message_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        LOGGER_IS_LOGGED_INFO("!(err = all_prepare_message_input_run(message, argc, argv, env))...");
+        if (!(err = all_prepare_message_input_run(message, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_message_input_run(message, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_message_input_run(message, argc, argv, env))");
+        }
+        return err;
+    }
+    virtual int all_input_message_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = before_input_message_run(message, argc, argv, env))) {
+            int err2 = 0;
+            err = input_message_run(message, argc, argv, env);
+            if ((err2 = after_input_message_run(message, argc, argv, env))) {
+                if (!(err)) err = err2;
+            }
+        }
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...prepare_message_input_run
+    virtual int prepare_message_input_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        LOGGER_IS_LOGGED_INFO("!(err = prepare_read(message, argc, argv, env))...");
+        if (!(err = prepare_read(message, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = prepare_read(message, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = prepare_read(message, argc, argv, env))");
+        }
+        return err;
+    }
+    virtual int before_prepare_message_input_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int after_prepare_message_input_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int all_prepare_message_input_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = before_prepare_message_input_run(message, argc, argv, env))) {
+            int err2 = 0;
+            err = prepare_message_input_run(message, argc, argv, env);
+            if ((err2 = after_prepare_message_input_run(message, argc, argv, env))) {
+                if (!(err)) err = err2;
+            }
+        }
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+
+    /// ...read
+    int (derives::*read_)(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env);
+    virtual int read(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (read_) {
+            if (!(err = (this->*read_)(r, c, reader, argc, argv, env))) {
+            } else {
+            }
+        } else {
+            if (!(err = default_read(r, c, reader, argc, argv, env))) {
+            } else {
+            }
+        }
+        return err;
+    }
+    virtual int default_read(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = read_crlf2(r, c, reader, argc, argv, env))) {
+        } else {
+        }
+        return err;
+    }
+    /// ...<cr><lf><cr><lf>
+    virtual int read_crlf2(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        ssize_t amount = 0;
+        enum { ch, cr, crlf, crlfcr } s = ch;
+
+        while (0 < (amount = reader.read(&c, 1))) {
+            r.append(&c, 1);
+            switch (c) {
+            case '\r':
+                LOGGER_IS_LOGGED_INFO("...case '\\r':");
+                switch (s) {
+                case ch:
+                    s = cr;
+                    break;
+                case cr:
+                    s = cr;
+                    break;
+                case crlf:
+                    s = crlfcr;
+                    break;
+                case crlfcr:
+                    s = cr;
+                    break;
+                default:
+                    LOGGER_IS_LOGGED_ERROR("...unexpected s = " << int_to_string(s));
+                    return err = 1;
+                }
+                break;
+            case '\n':
+                LOGGER_IS_LOGGED_INFO("...case '\\n':");
+                switch (s) {
+                case ch:
+                    s = ch;
+                    break;
+                case crlf:
+                    s = ch;
+                    break;
+                case cr:
+                    s = crlf;
+                    break;
+                case crlfcr:
+                    LOGGER_IS_LOGGED_INFO("...r = \"" << r << "\"");
+                    return err;
+                default:
+                    LOGGER_IS_LOGGED_ERROR("...unexpected s = " << int_to_string(s));
+                    return err = 1;
+                }
+                break;
+            default:
+                LOGGER_IS_LOGGED_INFO("...default:");
+                s = ch;
+                break;
+            }
+        }
+        return err;
+    }
+    virtual int set_read_crlf2(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        read_ = &derives::read_crlf2;
+        return err;
+    }
+    virtual int read_crlf2_set(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int unset_read_crlf2(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        read_ = 0;
+        return err;
+    }
+    virtual int crlf2_read_unset(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+
+    /// ...prepare_read
+    int (derives::*prepare_read_)(string_t& r, int argc, char_t** argv, char_t** env);
+    virtual int prepare_read(string_t& r, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (prepare_read_) {
+            if (!(err = (this->*prepare_read_)(r, argc, argv, env))) {
+            } else {
+            }
+        } else {
+            if (!(err = default_prepare_read(r, argc, argv, env))) {
+            } else {
+            }
+        }
+        return err;
+    }
+    virtual int default_prepare_read(string_t& r, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = prepare_read_crlf2(r, argc, argv, env))) {
+        } else {
+        }
+        return err;
+    }
+    /// ...<cr><lf><cr><lf>
+    virtual int prepare_read_crlf2(string_t& r, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        size_t length = 0;
+        const char_t* chars = 0;
+        
+        if ((chars = r.has_chars(length))) {
+            enum { ch, cr, crlf, crlfcr } s = ch;
+            size_t count = 0;
+            string_t r_append, r_assign;
+            
+            for (count = length; count > 0; --count, ++chars) {
+                char_t c = *chars;
+                r_append.append(&c, 1);
+                switch(c) {
+                case '\r':
+                    LOGGER_IS_LOGGED_INFO("...case '\\r':");
+                    switch (s) {
+                    case ch:
+                        s = cr;
+                        break;
+                    case cr:
+                        s = cr;
+                        r_assign.append(r_append);
+                        r_append.clear();
+                        break;
+                    case crlf:
+                        s = crlfcr;
+                        break;
+                    case crlfcr:
+                        s = cr;
+                        r_assign.append(r_append);
+                        r_append.clear();
+                        break;
+                    default:
+                        LOGGER_IS_LOGGED_ERROR("...unexpected s = " << int_to_string(s));
+                        return err = 1;
+                    }
+                    break;
+                case '\n':
+                    LOGGER_IS_LOGGED_INFO("...case '\\n':");
+                    switch (s) {
+                    case ch:
+                        s = ch;
+                        r_assign.append(r_append);
+                        r_append.clear();
+                        break;
+                    case crlf:
+                        s = ch;
+                        r_assign.append(r_append);
+                        r_append.clear();
+                        break;
+                    case cr:
+                        s = crlf;
+                        break;
+                    case crlfcr:
+                        r.assign(r_assign);
+                        return err;
+                    default:
+                        LOGGER_IS_LOGGED_ERROR("...unexpected s = " << int_to_string(s));
+                        return err = 1;
+                    }
+                    break;
+                default:
+                    LOGGER_IS_LOGGED_INFO("...default:");
+                    s = ch;
+                    r_assign.append(r_append);
+                    r_append.clear();
+                    break;
+                }
+            }
+        } else {
+        }
+        return err;
+    }
+    virtual int set_prepare_read_crlf2(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        prepare_read_ = &derives::prepare_read_crlf2;
+        return err;
+    }
+    virtual int prepare_read_crlf2_set(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int unset_prepare_read_crlf2(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        prepare_read_ = 0;
+        return err;
+    }
+    virtual int prepare_read_crlf2_unset(int argc, char_t** argv, char_t** env) {
+        int err = 0;
         return err;
     }
 

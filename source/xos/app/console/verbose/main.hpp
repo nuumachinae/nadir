@@ -100,6 +100,7 @@ protected:
             const string_t& new_message = message;
             message.assign(optarg);
             LOGGER_IS_LOGGED_INFO("...message = \"" << new_message << "\"");
+        } else {
         }
         return err;
     }
@@ -124,54 +125,53 @@ protected:
     virtual int file_on_set_string_message_option(string_t& message, const char_t* optarg, int optind, int argc, char_t** argv, char_t** env) {
         int err = 0;
         if ((optarg) && (optarg[0])) {
-            if ((optarg) && (optarg[0])) {
-                xos::io::crt::file::char_reader file;
-    
-                LOGGER_IS_LOGGED_INFO("file.open(\""<< optarg <<"\")...");
-                if ((file.open(optarg))) {
-                    xos::io::crt::file::char_reader::char_t c = 0;
-                    ssize_t amount = 0, count = 0;
-                    LOGGER_IS_LOGGED_INFO("...file.open(\""<< optarg <<"\")");
+            xos::io::crt::file::char_reader file;
+
+            LOGGER_IS_LOGGED_INFO("file.open(\""<< optarg <<"\")...");
+            if ((file.open(optarg))) {
+                xos::io::crt::file::char_reader::char_t c = 0;
+                ssize_t amount = 0, count = 0;
+                LOGGER_IS_LOGGED_INFO("...file.open(\""<< optarg <<"\")");
+                LOGGER_IS_LOGGED_INFO("(0 < (amount = file.read(&c, 1)))...");
+                if (0 < (amount = file.read(&c, 1))) {
+                    const string_t& new_message = message;
+                    string_t old_message(message);
                     LOGGER_IS_LOGGED_INFO("(0 < (amount = file.read(&c, 1)))...");
-                    if (0 < (amount = file.read(&c, 1))) {
-                        const string_t& new_message = message;
-                        string_t old_message(message);
-                        LOGGER_IS_LOGGED_INFO("(0 < (amount = file.read(&c, 1)))...");
-                        message.clear();
-                        do {
-                            char_t message_c = ((char_t)c);
-                            if ((err = on_string_message_char(message, message_c, argc, argv, env))) {
-                                LOGGER_IS_LOGGED_ERROR("...failed on (" << signed_to_string(err) << " = on_string_message_char(message, message_c, argc, argv, env))");
-                                message.assign(old_message);
-                                break;
-                            }
-                            count += amount;
-                        } while (0 < (amount = file.read(&c, 1)));
-                        LOGGER_IS_LOGGED_INFO("...message = \"" << new_message << "\"");
-                    }
-                    LOGGER_IS_LOGGED_INFO("...file.close(\""<< optarg <<"\")...");
-                    file.close();
+                    message.clear();
+                    do {
+                        char_t message_c = ((char_t)c);
+                        if ((err = on_string_message_char(message, message_c, argc, argv, env))) {
+                            LOGGER_IS_LOGGED_ERROR("...failed on (" << signed_to_string(err) << " = on_string_message_char(message, message_c, argc, argv, env))");
+                            message.assign(old_message);
+                            break;
+                        }
+                        count += amount;
+                    } while (0 < (amount = file.read(&c, 1)));
+                    LOGGER_IS_LOGGED_INFO("...message = \"" << new_message << "\"");
                 }
+                LOGGER_IS_LOGGED_INFO("...file.close(\""<< optarg <<"\")...");
+                file.close();
             }
+        } else {
         }
         return err;
     }
     virtual int hex_file_on_set_string_message_option(string_t& message, const char_t* optarg, int optind, int argc, char_t** argv, char_t** env) {
         int err = 0;
         if ((optarg) && (optarg[0])) {
-            if ((optarg) && (optarg[0])) {
-                xos::io::crt::file::reader file;
-    
-                LOGGER_IS_LOGGED_INFO("file.open(\""<< optarg <<"\")...");
-                if ((file.open(optarg))) {
-                    
-                    if (!(err = this->hex_decode_source_to_string(message, file))) {
-                    } else {
-                    }
-                    LOGGER_IS_LOGGED_INFO("...file.close(\""<< optarg <<"\")...");
-                    file.close();
+            xos::io::crt::file::reader file;
+
+            LOGGER_IS_LOGGED_INFO("file.open(\""<< optarg <<"\")...");
+            if ((file.open(optarg))) {
+                
+                LOGGER_IS_LOGGED_INFO("!(err = this->hex_decode_source_to_string(message, file))...");
+                if (!(err = this->hex_decode_source_to_string(message, file))) {
+                } else {
                 }
+                LOGGER_IS_LOGGED_INFO("...file.close(\""<< optarg <<"\")...");
+                file.close();
             }
+        } else {
         }
         return err;
     }
@@ -191,6 +191,53 @@ protected:
     }
     virtual int file_on_set_string_message_option_set(int argc, char_t** argv, char_t** env) {
         int err = 0;
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...input_string_message
+    int (derives::*input_string_message_)(string_t& string, int argc, char_t** argv, char_t** env);
+    virtual int input_string_message(string_t& string, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (input_string_message_) {
+            if (!(err = (this->*input_string_message_)(string, argc, argv, env))) {
+            } else {
+            }
+        } else {
+            if (!(err = default_input_string_message(string, argc, argv, env))) {
+            } else {
+            }
+        }
+        return err;
+    }
+    virtual int default_input_string_message(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        ssize_t count = 0, amount = 0;
+        char_t c = 0;
+
+        LOGGER_IS_LOGGED_INFO("(0 < (amount = this->in(&c, 1)))...");
+        if (0 < (amount = this->in(&c, 1))) {
+            const string_t& new_message = message;
+            string_t old_message(message);
+
+            LOGGER_IS_LOGGED_INFO("...(0 < (" << amount << " = this->in(&c, 1)))");
+            LOGGER_IS_LOGGED_INFO("message.clear()...");
+            message.clear();
+            do {
+                if ((err = on_string_message_char(message, c, argc, argv, env))) {
+                    LOGGER_IS_LOGGED_ERROR("...failed on (" << signed_to_string(err) << " = on_string_message_char(message, c, argc, argv, env))");
+                    LOGGER_IS_LOGGED_INFO("message.assign(old_message)...");
+                    message.assign(old_message);
+                    break;
+                }
+                count += amount;
+                if (0 > (amount = this->in(&c, 1))) {
+                    LOGGER_IS_LOGGED_INFO("...(0 > (" << amount << " = this->in(&c, 1)))");
+                }
+            } while (0 < amount);
+            LOGGER_IS_LOGGED_INFO("...message = \"" << new_message << "\"");
+        } else {
+        }
         return err;
     }
 
@@ -271,30 +318,6 @@ protected:
         return err;
     }
 
-    ///////////////////////////////////////////////////////////////////////
-    /// ...hex_decode_source_to_string
-    virtual int hex_decode_source_to_string(string_t& string, io::reader& source) {
-        int err = 0;
-        ssize_t count = 0, amount = 0;
-        byte_t byte = 0;
-
-        if (0 < (amount = source.read(&byte, 1))) {
-            hex_read_to_string_t to_string_reader(string);
-            hex_reader_t reader(to_string_reader, source);
-            
-            reader.on_begin(&byte, 1);
-            do {
-                if ((0 > (reader.on_read(&byte, 1)))) {
-                    break;
-                }
-                count += amount;
-                amount = source.read(&byte, 1);
-            } while (0 < amount);
-            reader.on_end(&byte, 1);
-        }
-        return err;
-    }
-
     /// ...input_option...
     virtual int on_set_file_input_option
     (const char_t* optarg, int optind, int argc, char_t**argv, char_t**env) {
@@ -315,6 +338,56 @@ protected:
             } else {
             }
         } else {
+        }
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...hex_decode_source_to_string
+    virtual int hex_decode_source_to_string(string_t& string, io::reader& source) {
+        int err = 0;
+        ssize_t count = 0, amount = 0;
+        byte_t byte = 0;
+
+        LOGGER_IS_LOGGED_INFO("(0 < (amount = source.read(&byte, 1)))...");
+        if (0 < (amount = source.read(&byte, 1))) {
+            hex_read_to_string_t to_string_reader(string);
+            hex_reader_t reader(to_string_reader, source);
+            
+            LOGGER_IS_LOGGED_INFO("...(0 < (" << amount << " = source.read(&byte, 1)))");
+            LOGGER_IS_LOGGED_INFO("reader.on_begin(&byte, 1)...");
+            reader.on_begin(&byte, 1);
+            do {
+                if (0 > (amount = reader.on_read(&byte, 1))) {
+                    LOGGER_IS_LOGGED_INFO("...(0 > (" << amount << " = reader.on_read(&byte, 1)))");
+                    break;
+                }
+                count += amount;
+                amount = source.read(&byte, 1);
+            } while (0 < amount);
+            LOGGER_IS_LOGGED_INFO("reader.on_end(&byte, 1)...");
+            reader.on_end(&byte, 1);
+        }
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...input_to_string
+    virtual int input_to_string(string_t& string) {
+        int err = 0;
+        ssize_t count = 0, amount = 0;
+        char_t c = 0;
+
+        LOGGER_IS_LOGGED_INFO("(0 < (amount = this->in(&c, 1)))...");
+        if (0 < (amount = this->in(&c, 1))) {
+            LOGGER_IS_LOGGED_INFO("...(0 < (" << amount << " = this->in(&c, 1)))");
+            do {
+                string.append(&c, 1);
+                count += amount;
+                if (0 > (amount = this->in(&c, 1))) {
+                    LOGGER_IS_LOGGED_INFO("...(0 > (" << amount << " = this->in(&c, 1)))");
+                }
+            } while (0 < amount);
         }
         return err;
     }

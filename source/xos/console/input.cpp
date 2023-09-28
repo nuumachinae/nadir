@@ -16,7 +16,7 @@
 ///   File: input.cpp
 ///
 /// Author: $author$
-///   Date: 6/20/2023
+///   Date: 6/20/2023, 9/28/2023
 //////////////////////////////////////////////////////////////////////////
 #include "xos/console/input.hpp"
 
@@ -64,6 +64,13 @@ ssize_t in(file_t f, char *what, size_t size) {
     ssize_t count = 0;
     if ((f != ((file_t)null)) && (what)) {
         count = ::fread(what, sizeof(char), size, f);
+    }
+    return count;
+}
+ssize_t in_fill(file_t f) {
+    ssize_t count = 0;
+    if ((f != ((file_t)null))) {
+        /// count = ::ffill(f);
     }
     return count;
 }
