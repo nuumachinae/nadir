@@ -142,8 +142,34 @@ protected:
         int err = 0;
         const string_t& endof_message = this->crlf2_endof_message();
         
-        LOGGER_IS_LOGGED_INFO("message.append(endof_message)...");
+        LOGGER_IS_LOGGED_INFO("message.append(endof_message = " << endof_message << ")...");
         message.append(endof_message);
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...prepare_message_input_run
+    virtual int prepare_message_input_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        LOGGER_IS_LOGGED_INFO("!(err = this->prepare_read_crlf2(message, argc, argv, env))...");
+        if (!(err = this->prepare_read_crlf2(message, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = this->prepare_read_crlf2(message, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = this->prepare_read_crlf2(message, argc, argv, env))");
+        }
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...read
+    virtual int read(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        LOGGER_IS_LOGGED_INFO("!(err = this->read_crlf2(r, c, reader, argc, argv, env))...");
+        if (!(err = this->read_crlf2(r, c, reader, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = this->read_crlf2(r, c, reader, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = this->read_crlf2(r, c, reader, argc, argv, env))");
+        }
         return err;
     }
 

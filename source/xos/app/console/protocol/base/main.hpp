@@ -80,6 +80,59 @@ protected:
         return err;
     }
 
+    ///////////////////////////////////////////////////////////////////////
+    /// ...output_message_run
+    virtual int output_message_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        LOGGER_IS_LOGGED_INFO("!(err = this->all_prepare_message_to_output_run(message, argc, argv, env))...");
+        if (!(err = this->all_prepare_message_to_output_run(message, argc, argv, env))) {
+            const string_t& out_message = message;
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = this->all_prepare_message_to_output_run(message, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("this->out(message = \"" << out_message << "\")...");
+            this->out(out_message);
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = this->all_prepare_message_to_output_run(message, argc, argv, env))");
+        }
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...prepare_message_to_output_run
+    virtual int prepare_message_to_output_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        const string_t& endof_message = this->lf_endof_message();
+        
+        LOGGER_IS_LOGGED_INFO("message.append(endof_message = " << endof_message << ")...");
+        message.append(endof_message);
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...prepare_message_input_run
+    virtual int prepare_message_input_run(string_t& message, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        LOGGER_IS_LOGGED_INFO("!(err = this->prepare_read_lf(message, argc, argv, env))...");
+        if (!(err = this->prepare_read_lf(message, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = this->prepare_read_lf(message, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = this->prepare_read_lf(message, argc, argv, env))");
+        }
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...read
+    virtual int read(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        LOGGER_IS_LOGGED_INFO("!(err = this->read_lf(r, c, reader, argc, argv, env))...");
+        if (!(err = this->read_lf(r, c, reader, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = this->read_lf(r, c, reader, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = this->read_lf(r, c, reader, argc, argv, env))");
+        }
+        return err;
+    }
+
 protected:
 }; /// class maint 
 typedef maint<> main;

@@ -837,9 +837,13 @@ protected:
     /// ...output_message_run
     virtual int output_message_run(string_t& message, int argc, char_t** argv, char_t** env) {
         int err = 0;
+        LOGGER_IS_LOGGED_INFO("!(err = all_prepare_message_to_output_run(message, argc, argv, env))...");
         if (!(err = all_prepare_message_to_output_run(message, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_message_to_output_run(message, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("this->outln(message = \"" << message << "\")...");
             this->outln(message);
         } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_message_to_output_run(message, argc, argv, env))");
         }
         return err;
     }
@@ -989,7 +993,83 @@ protected:
         }
         return err;
     }
+    /// ...<cr>
+    virtual int on_read_cr(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int read_cr(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        ssize_t amount = 0;
+        enum { ch, cr } s = ch;
+
+        while (0 < (amount = reader.read(&c, 1))) {
+            r.append(&c, 1);
+            switch (c) {
+            case '\r':
+                LOGGER_IS_LOGGED_INFO("...case '\\r':");
+                switch (s) {
+                case ch:
+                    s = cr;
+                    LOGGER_IS_LOGGED_INFO("err = on_read_cr(r, c, reader, argc, argv, env)...");
+                    err = on_read_cr(r, c, reader, argc, argv, env);
+                    return err;
+                default:
+                    LOGGER_IS_LOGGED_ERROR("...unexpected s = " << int_to_string(s));
+                    return err = 1;
+                } /// switch (s)
+                break;
+            case '\n':
+                LOGGER_IS_LOGGED_INFO("...case '\\n':");
+                break;
+            default:
+                LOGGER_IS_LOGGED_INFO("...default:");
+                break;
+            } /// switch (c)
+        } /// while (0 < (amount = reader.read(&c, 1)))
+        return err;
+    }
+    /// ...<lf>
+    virtual int on_read_lf(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int read_lf(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        ssize_t amount = 0;
+        enum { ch, lf } s = ch;
+
+        while (0 < (amount = reader.read(&c, 1))) {
+            r.append(&c, 1);
+            switch (c) {
+            case '\r':
+                LOGGER_IS_LOGGED_INFO("...case '\\r':");
+                break;
+            case '\n':
+                LOGGER_IS_LOGGED_INFO("...case '\\n':");
+                switch (s) {
+                case ch:
+                    s = lf;
+                    LOGGER_IS_LOGGED_INFO("err = on_read_lf(r, c, reader, argc, argv, env)...");
+                    err = on_read_lf(r, c, reader, argc, argv, env);
+                    return err;
+                default:
+                    LOGGER_IS_LOGGED_ERROR("...unexpected s = " << int_to_string(s));
+                    return err = 1;
+                } /// switch (s)
+                break;
+            default:
+                LOGGER_IS_LOGGED_INFO("...default:");
+                break;
+            } /// switch (c)
+        } /// while (0 < (amount = reader.read(&c, 1)))
+        return err;
+    }
     /// ...<cr><lf><cr><lf>
+    virtual int on_read_crlf2(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
     virtual int read_crlf2(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env) {
         int err = 0;
         ssize_t amount = 0;
@@ -1031,7 +1111,8 @@ protected:
                     s = crlf;
                     break;
                 case crlfcr:
-                    LOGGER_IS_LOGGED_INFO("...r = \"" << r << "\"");
+                    LOGGER_IS_LOGGED_INFO("err = on_read_crlf2(r, c, reader, argc, argv, env)...");
+                    err = on_read_crlf2(r, c, reader, argc, argv, env);
                     return err;
                 default:
                     LOGGER_IS_LOGGED_ERROR("...unexpected s = " << int_to_string(s));
@@ -1084,6 +1165,88 @@ protected:
         int err = 0;
         if (!(err = prepare_read_crlf2(r, argc, argv, env))) {
         } else {
+        }
+        return err;
+    }
+    /// ...<cr>
+    virtual int prepare_read_cr(string_t& r, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        size_t length = 0;
+        const char_t* chars = 0;
+        
+        if ((chars = r.has_chars(length))) {
+            enum { ch, cr } s = ch;
+            size_t count = 0;
+            string_t r_assign;
+
+            for (count = length; count > 0; --count, ++chars) {
+                char_t c = *chars;
+
+                switch(c) {
+                case '\r':
+                    LOGGER_IS_LOGGED_INFO("...case '\\r':");
+                    switch (s) {
+                    case ch:
+                        s = cr;
+                        LOGGER_IS_LOGGED_INFO("r.assign(\"" << r_assign << "\")...");
+                        r.assign(r_assign);
+                        return err;
+                    default:
+                        LOGGER_IS_LOGGED_ERROR("...unexpected s = " << int_to_string(s));
+                        return err = 1;
+                    } /// switch (s)
+                    break;
+                case '\n':
+                    LOGGER_IS_LOGGED_INFO("...case '\\n':");
+                    r_assign.append(&c, 1);
+                    break;
+                default:
+                    LOGGER_IS_LOGGED_INFO("...default:");
+                    r_assign.append(&c, 1);
+                    break;
+                } /// switch(c) 
+            } /// for (count = length; count > 0; --count, ++chars)
+        }
+        return err;
+    }
+    /// ...<lf>
+    virtual int prepare_read_lf(string_t& r, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        size_t length = 0;
+        const char_t* chars = 0;
+        
+        if ((chars = r.has_chars(length))) {
+            enum { ch, lf } s = ch;
+            size_t count = 0;
+            string_t r_assign;
+
+            for (count = length; count > 0; --count, ++chars) {
+                char_t c = *chars;
+
+                switch(c) {
+                case '\r':
+                    LOGGER_IS_LOGGED_INFO("...case '\\r':");
+                    r_assign.append(&c, 1);
+                    break;
+                case '\n':
+                    LOGGER_IS_LOGGED_INFO("...case '\\n':");
+                    switch (s) {
+                    case ch:
+                        s = lf;
+                        LOGGER_IS_LOGGED_INFO("r.assign(\"" << r_assign << "\")...");
+                        r.assign(r_assign);
+                        return err;
+                    default:
+                        LOGGER_IS_LOGGED_ERROR("...unexpected s = " << int_to_string(s));
+                        return err = 1;
+                    } /// switch (s)
+                    break;
+                default:
+                    LOGGER_IS_LOGGED_INFO("...default:");
+                    r_assign.append(&c, 1);
+                    break;
+                } /// switch(c) 
+            } /// for (count = length; count > 0; --count, ++chars)
         }
         return err;
     }
