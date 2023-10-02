@@ -81,22 +81,6 @@ protected:
     }
 
     ///////////////////////////////////////////////////////////////////////
-    /// ...output_message_run
-    virtual int output_message_run(string_t& message, int argc, char_t** argv, char_t** env) {
-        int err = 0;
-        LOGGER_IS_LOGGED_INFO("!(err = this->all_prepare_message_to_output_run(message, argc, argv, env))...");
-        if (!(err = this->all_prepare_message_to_output_run(message, argc, argv, env))) {
-            const string_t& out_message = message;
-            LOGGER_IS_LOGGED_INFO("...!(" << err << " = this->all_prepare_message_to_output_run(message, argc, argv, env))");
-            LOGGER_IS_LOGGED_INFO("this->out(message = \"" << out_message << "\")...");
-            this->out(out_message);
-        } else {
-            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = this->all_prepare_message_to_output_run(message, argc, argv, env))");
-        }
-        return err;
-    }
-
-    ///////////////////////////////////////////////////////////////////////
     /// ...prepare_message_to_output_run
     virtual int prepare_message_to_output_run(string_t& message, int argc, char_t** argv, char_t** env) {
         int err = 0;

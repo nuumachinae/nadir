@@ -69,7 +69,10 @@ public:
     : run_(0), 
       restart_(false), start_(false), stop_(false),
       request_("request"), response_("response"), 
-      unknown_request_("unknown"), unknown_response_("unknown") {
+      known_request_(request_), known_response_(response_),
+      unknown_request_("unknown"), unknown_response_(unknown_request_),
+      crlf2_endof_message_("\r\n\r\n"), crlf_endof_message_("\r\n"), 
+      cr_endof_message_("\r"), lf_endof_message_("\n") {
     }
     virtual ~main_optt() {
     }
@@ -319,7 +322,9 @@ protected:
         string_t& request = this->request();
         LOGGER_IS_LOGGED_INFO("!(err = all_output_request_run(request, argc, argv, env))...");
         if (!(err = all_output_request_run(request, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(err = all_output_request_run(request, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_output_request_run(request, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_output_request_run(request, argc, argv, env))");
         }
         return err;
     }
@@ -378,7 +383,9 @@ protected:
         string_t& response = this->response();
         LOGGER_IS_LOGGED_INFO("(err = all_output_response_run(response, argc, argv, env))...");
         if (!(err = all_output_response_run(response, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(err = all_output_response_run(response, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_output_response_run(response, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_output_response_run(response, argc, argv, env))");
         }
         return err;
     }
@@ -444,11 +451,12 @@ protected:
         if ((chars = request.has_chars(length))) {
             string_t& response = this->response();
             
-            LOGGER_IS_LOGGED_INFO("...(chars = request.has_chars(length))");
+            LOGGER_IS_LOGGED_INFO("...(chars = request.has_chars(" << length << "))");
             LOGGER_IS_LOGGED_INFO("!(err = all_prepare_response_to_request_run(response, request, argc, argv, env))...");
             if (!(err = all_prepare_response_to_request_run(response, request, argc, argv, env))) {
-                LOGGER_IS_LOGGED_INFO("...!(err = all_prepare_response_to_request_run(response, request, argc, argv, env))");
+                LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_response_to_request_run(response, request, argc, argv, env))");
             } else {
+                LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_response_to_request_run(response, request, argc, argv, env))");
             }
         }
         return err;
@@ -482,16 +490,18 @@ protected:
         int err = 0;
         string_t& response = this->response();
 
-        LOGGER_IS_LOGGED_INFO("all_prepare_response_to_request_run...");
+        LOGGER_IS_LOGGED_INFO("!(err = all_prepare_response_to_request_run(response, request, argc, argv, env))...");
         if (!(err = all_prepare_response_to_request_run(response, request, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...all_prepare_response_to_request_run");
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_response_to_request_run(response, request, argc, argv, env))");
             
-            LOGGER_IS_LOGGED_INFO("all_output_response_run(response, argc, argv, env)...");
+            LOGGER_IS_LOGGED_INFO("!(err = all_output_response_run(response, argc, argv, env))...");
             if (!(err = all_output_response_run(response, argc, argv, env))) {
-                LOGGER_IS_LOGGED_INFO("...all_output_response_run(response, argc, argv, env)");
+                LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_output_response_run(response, argc, argv, env))");
             } else {
+                LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_output_response_run(response, argc, argv, env))");
             }
         } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_response_to_request_run(response, request, argc, argv, env))");
         }
         return err;
     }
@@ -521,8 +531,9 @@ protected:
         int err = 0;
         LOGGER_IS_LOGGED_INFO("!(err = all_output_response_run(response, argc, argv, env))...");
         if (!(err = all_output_response_run(response, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(err = all_output_response_run(response, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_output_response_run(response, argc, argv, env))");
         } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_output_response_run(response, argc, argv, env))");
         }
         return err;
     }
@@ -560,10 +571,11 @@ protected:
     }
     virtual int default_prepare_response_to_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
         int err = 0;
-        LOGGER_IS_LOGGED_INFO("!(err = all_prepare_response_to_unknown_request_run(response, request, argc, argv, env))...");
-        if (!(err = all_prepare_response_to_unknown_request_run(response, request, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(err = all_prepare_response_to_unknown_request_run(response, request, argc, argv, env))");
+        LOGGER_IS_LOGGED_INFO("!(err = all_prepare_response_to_known_request_run(response, request, argc, argv, env))...");
+        if (!(err = all_prepare_response_to_known_request_run(response, request, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_response_to_known_request_run(response, request, argc, argv, env))");
         } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_response_to_known_request_run(response, request, argc, argv, env))");
         }
         return err;
     }
@@ -607,6 +619,64 @@ protected:
     }
     virtual int response_prepare_response_to_request_run_unset(int argc, char_t** argv, char_t** env) {
         int err = 0;
+        return err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...prepare_response_to_known_request_run
+    int (derives::*prepare_response_to_known_request_run_)(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env);
+    virtual int prepare_response_to_known_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (prepare_response_to_known_request_run_) {
+            if (!(err = (this->*prepare_response_to_known_request_run_)(response, request, argc, argv, env))) {
+            } else {
+            }
+        } else {
+            if (!(err = default_prepare_response_to_known_request_run(response, request, argc, argv, env))) {
+            } else {
+            }
+        }
+        return err;
+    }
+    virtual int default_prepare_response_to_known_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0, unequal = 0;
+        const string_t& known_request = this->known_request();
+        
+        LOGGER_IS_LOGGED_INFO("!(unequal = request.compare(known_request))...");
+        if (!(unequal = request.compare(known_request))) {
+            const string_t& known_response = this->known_response();
+
+            LOGGER_IS_LOGGED_INFO("...!(" << unequal << " = request.compare(known_request))");
+            LOGGER_IS_LOGGED_INFO("response.assign(known_response = \"" << known_response << "\")...");
+            response.assign(known_response);
+        } else {
+            LOGGER_IS_LOGGED_INFO("...(" << unequal << " = request.compare(known_request))");
+            LOGGER_IS_LOGGED_INFO("!(err = all_prepare_response_to_unknown_request_run(response, request, argc, argv, env))...");
+            if (!(err = all_prepare_response_to_unknown_request_run(response, request, argc, argv, env))) {
+                LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_response_to_unknown_request_run(response, request, argc, argv, env))");
+            } else {
+                LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_response_to_unknown_request_run(response, request, argc, argv, env))");
+            }
+        }
+        return err;
+    }
+    virtual int before_prepare_response_to_known_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int after_prepare_response_to_known_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int all_prepare_response_to_known_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = before_prepare_response_to_known_request_run(response, request, argc, argv, env))) {
+            int err2 = 0;
+            err = prepare_response_to_known_request_run(response, request, argc, argv, env);
+            if ((err2 = after_prepare_response_to_known_request_run(response, request, argc, argv, env))) {
+                if (!(err)) err = err2;
+            }
+        }
         return err;
     }
 
@@ -659,7 +729,9 @@ protected:
         int err = 0;
         LOGGER_IS_LOGGED_INFO("!(err = all_input_message_run(request, argc, argv, env))...");
         if (!(err = all_input_message_run(request, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(err = all_input_message_run(request, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_input_message_run(request, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_input_message_run(request, argc, argv, env))");
         }
         return err;
     }
@@ -671,7 +743,9 @@ protected:
         int err = 0;
         LOGGER_IS_LOGGED_INFO("!(err = all_prepare_request_input_run(request, argc, argv, env))...");
         if (!(err = all_prepare_request_input_run(request, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(err = all_prepare_request_input_run(request, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_request_input_run(request, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_request_input_run(request, argc, argv, env))");
         }
         return err;
     }
@@ -693,7 +767,9 @@ protected:
         int err = 0;
         LOGGER_IS_LOGGED_INFO("!(err = all_output_message_run(request, argc, argv, env))...");
         if (!(err = all_output_message_run(request, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(err = all_output_message_run(request, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_output_message_run(request, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_output_message_run(request, argc, argv, env))");
         }
         return err;
     }
@@ -701,7 +777,9 @@ protected:
         int err = 0;
         LOGGER_IS_LOGGED_INFO("!(err = all_prepare_request_to_output_run(request, argc, argv, env))...");
         if (!(err = all_prepare_request_to_output_run(request, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(err = all_prepare_request_to_output_run(request, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_request_to_output_run(request, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_request_to_output_run(request, argc, argv, env))");
         }
         return err;
     }
@@ -779,7 +857,9 @@ protected:
         int err = 0;
         LOGGER_IS_LOGGED_INFO("!(err = all_output_message_run(response, argc, argv, env))...");
         if (!(err = all_output_message_run(response, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(err = all_output_message_run(response, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_output_message_run(response, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_output_message_run(response, argc, argv, env))");
         }
         return err;
     }
@@ -787,7 +867,9 @@ protected:
         int err = 0;
         LOGGER_IS_LOGGED_INFO("!(err = all_prepare_response_to_output_run(response, argc, argv, env))...");
         if (!(err = all_prepare_response_to_output_run(response, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(err = all_prepare_response_to_output_run(response, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_response_to_output_run(response, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_response_to_output_run(response, argc, argv, env))");
         }
         return err;
     }
@@ -837,18 +919,19 @@ protected:
     /// ...output_message_run
     virtual int output_message_run(string_t& message, int argc, char_t** argv, char_t** env) {
         int err = 0;
-        LOGGER_IS_LOGGED_INFO("!(err = all_prepare_message_to_output_run(message, argc, argv, env))...");
-        if (!(err = all_prepare_message_to_output_run(message, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_message_to_output_run(message, argc, argv, env))");
-            LOGGER_IS_LOGGED_INFO("this->outln(message = \"" << message << "\")...");
-            this->outln(message);
-        } else {
-            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_message_to_output_run(message, argc, argv, env))");
-        }
+        const string_t& out_message = message;
+        LOGGER_IS_LOGGED_INFO("this->out(message = \"" << out_message << "\")...");
+        this->out(out_message);
         return err;
     }
     virtual int before_output_message_run(string_t& message, int argc, char_t** argv, char_t** env) {
         int err = 0;
+        LOGGER_IS_LOGGED_INFO("!(err = all_prepare_message_to_output_run(message, argc, argv, env))...");
+        if (!(err = all_prepare_message_to_output_run(message, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_message_to_output_run(message, argc, argv, env))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_message_to_output_run(message, argc, argv, env))");
+        }
         return err;
     }
     virtual int after_output_message_run(string_t& message, int argc, char_t** argv, char_t** env) {
@@ -871,6 +954,9 @@ protected:
     /// ...prepare_message_to_output_run
     virtual int prepare_message_to_output_run(string_t& message, int argc, char_t** argv, char_t** env) {
         int err = 0;
+        const string_t& endof_message = lf_endof_message();
+        LOGGER_IS_LOGGED_INFO("message.append(endof_message = \"" << endof_message << "\")...");
+        message.append(endof_message);
         return err;
     }
     virtual int before_prepare_message_to_output_run(string_t& message, int argc, char_t** argv, char_t** env) {
@@ -988,8 +1074,11 @@ protected:
     }
     virtual int default_read(string_t& r, char_t& c, reader_t& reader, int argc, char_t** argv, char_t** env) {
         int err = 0;
-        if (!(err = read_crlf2(r, c, reader, argc, argv, env))) {
+        LOGGER_IS_LOGGED_INFO("...!(err = read_lf(r, c, reader, argc, argv, env))");
+        if (!(err = read_lf(r, c, reader, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = read_lf(r, c, reader, argc, argv, env))");
         } else {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = read_lf(r, c, reader, argc, argv, env))");
         }
         return err;
     }
@@ -1163,8 +1252,11 @@ protected:
     }
     virtual int default_prepare_read(string_t& r, int argc, char_t** argv, char_t** env) {
         int err = 0;
-        if (!(err = prepare_read_crlf2(r, argc, argv, env))) {
+        LOGGER_IS_LOGGED_INFO("!(err = prepare_read_lf(r, argc, argv, env))...");
+        if (!(err = prepare_read_lf(r, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = prepare_read_lf(r, argc, argv, env))");
         } else {
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = prepare_read_lf(r, argc, argv, env))");
         }
         return err;
     }
@@ -1390,6 +1482,141 @@ protected:
     }
 
     ///////////////////////////////////////////////////////////////////////
+    /// ...endof_message
+    /// ...
+    /// ...crlf2_endof_message
+    virtual string_t& set_crlf2_endof_message(const string_t& to) {
+        string_t& crlf2_endof_message = this->crlf2_endof_message();
+        crlf2_endof_message.assign(to);
+        return crlf2_endof_message;
+    }
+    virtual string_t& set_crlf2_endof_message(const char_t* to, size_t length) {
+        string_t& crlf2_endof_message = this->crlf2_endof_message();
+        crlf2_endof_message.assign(to, length);
+        return crlf2_endof_message;
+    }
+    virtual string_t& set_crlf2_endof_message(const char_t* to) {
+        string_t& crlf2_endof_message = this->crlf2_endof_message();
+        crlf2_endof_message.assign(to);
+        return crlf2_endof_message;
+    }
+    virtual string_t& crlf2_endof_message() const {
+        return (string_t&)crlf2_endof_message_;
+    }
+    ///////////////////////////////////////////////////////////////////////
+    /// ...crlf_endof_message
+    virtual string_t& set_crlf_endof_message(const string_t& to) {
+        string_t& crlf_endof_message = this->crlf_endof_message();
+        crlf_endof_message.assign(to);
+        return crlf_endof_message;
+    }
+    virtual string_t& set_crlf_endof_message(const char_t* to, size_t length) {
+        string_t& crlf_endof_message = this->crlf_endof_message();
+        crlf_endof_message.assign(to, length);
+        return crlf_endof_message;
+    }
+    virtual string_t& set_crlf_endof_message(const char_t* to) {
+        string_t& crlf_endof_message = this->crlf_endof_message();
+        crlf_endof_message.assign(to);
+        return crlf_endof_message;
+    }
+    virtual string_t& crlf_endof_message() const {
+        return (string_t&)crlf_endof_message_;
+    }
+    ///////////////////////////////////////////////////////////////////////
+    /// ...cr_endof_message
+    virtual string_t& set_cr_endof_message(const string_t& to) {
+        string_t& cr_endof_message = this->cr_endof_message();
+        cr_endof_message.assign(to);
+        return cr_endof_message;
+    }
+    virtual string_t& set_cr_endof_message(const char_t* to, size_t length) {
+        string_t& cr_endof_message = this->cr_endof_message();
+        cr_endof_message.assign(to, length);
+        return cr_endof_message;
+    }
+    virtual string_t& set_cr_endof_message(const char_t* to) {
+        string_t& cr_endof_message = this->cr_endof_message();
+        cr_endof_message.assign(to);
+        return cr_endof_message;
+    }
+    virtual string_t& cr_endof_message() const {
+        return (string_t&)cr_endof_message_;
+    }
+    ///////////////////////////////////////////////////////////////////////
+    /// ...lf_endof_message
+    virtual string_t& set_lf_endof_message(const string_t& to) {
+        string_t& lf_endof_message = this->lf_endof_message();
+        lf_endof_message.assign(to);
+        return lf_endof_message;
+    }
+    virtual string_t& set_lf_endof_message(const char_t* to, size_t length) {
+        string_t& lf_endof_message = this->lf_endof_message();
+        lf_endof_message.assign(to, length);
+        return lf_endof_message;
+    }
+    virtual string_t& set_lf_endof_message(const char_t* to) {
+        string_t& lf_endof_message = this->lf_endof_message();
+        lf_endof_message.assign(to);
+        return lf_endof_message;
+    }
+    virtual string_t& lf_endof_message() const {
+        return (string_t&)lf_endof_message_;
+    }
+    /// ...
+    /// ...endof_message
+    ///////////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...known...
+    /// ...
+    /// ...known_request
+    virtual string_t& set_known_request(const string_t& to) {
+        string_t& known_request = this->known_request();
+        known_request.assign(to);
+        return known_request;
+    }
+    virtual string_t& set_known_request(const char_t* to) {
+        string_t& known_request = this->known_request();
+        known_request.assign(to);
+        return known_request;
+    }
+    virtual string_t& set_known_request(const char_t* to, size_t length) {
+        string_t& known_request = this->known_request();
+        known_request.assign(to, length);
+        return known_request;
+    }
+    virtual string_t& known_request() const {
+        return (string_t&)known_request_;
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...known_response
+    virtual string_t& set_known_response(const string_t& to) {
+        string_t& known_response = this->known_response();
+        known_response.assign(to);
+        return known_response;
+    }
+    virtual string_t& set_known_response(const char_t* to, size_t length) {
+        string_t& known_response = this->known_response();
+        known_response.assign(to, length);
+        return known_response;
+    }
+    virtual string_t& set_known_response(const char_t* to) {
+        string_t& known_response = this->known_response();
+        known_response.assign(to);
+        return known_response;
+    }
+    virtual string_t& known_response() const {
+        return (string_t&)known_response_;
+    }
+    /// ...
+    /// ...known...
+    ///////////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////////////////////////
+    /// ...unknown...
+    /// ...
     /// ...unknown_request
     virtual string_t& set_unknown_request(const string_t& to) {
         string_t& unknown_request = this->unknown_request();
@@ -1430,6 +1657,9 @@ protected:
     virtual string_t& unknown_response() const {
         return (string_t&)unknown_response_;
     }
+    /// ...
+    /// ...unknown...
+    ///////////////////////////////////////////////////////////////////////
 
     ///////////////////////////////////////////////////////////////////////
     /// ...request
@@ -1531,7 +1761,10 @@ protected:
 protected:
     bool restart_, start_, stop_;
     string_t request_, response_, 
-             unknown_request_, unknown_response_;
+             known_request_, known_response_,
+             unknown_request_, unknown_response_,
+             crlf2_endof_message_, crlf_endof_message_, 
+             cr_endof_message_, lf_endof_message_;
 }; /// class main_optt 
 typedef main_optt<> main_opt;
 
