@@ -92,6 +92,51 @@ protected:
     typedef typename extends::hex_read_to_string_t hex_read_to_string_t;
     typedef typename extends::hex_reader_t hex_reader_t;
 
+    typedef xos::io::crt::file::reader file_reader_extends_t;
+
+    /// class file_reader_extend_t
+    class exported file_reader_extend_t: public file_reader_extends_t {
+    public:
+        typedef file_reader_extends_t extends;
+        typedef file_reader_extend_t derives;
+
+        /// constructor / destructor
+        file_reader_extend_t(const file_reader_extend_t& copy): extends(copy) {
+        }
+        file_reader_extend_t() {
+        }
+        virtual ~file_reader_extend_t() {
+        }
+    protected:
+    }; /// class file_reader_extend_t
+
+    /// class file_reader_t
+    class exported file_reader_t: virtual public reader_t, public file_reader_extend_t {
+    public:
+        typedef reader_t implements;
+        typedef file_reader_extend_t extends;
+        typedef file_reader_t derives;
+
+        typedef typename implements::what_t what_t;
+        typedef typename implements::sized_t sized_t;
+
+        /// constructor / destructor
+        file_reader_t(const file_reader_t& copy): extends(copy) {
+        }
+        file_reader_t() {
+        }
+        virtual ~file_reader_t() {
+        }
+        virtual ssize_t read(what_t* what, size_t size) {
+            ssize_t count = 0;
+            if ((0 >= (count = extends::read(what, size)))) {
+            } else {
+            }
+            return count;
+        }
+    }; /// class file_reader_t
+
+    
     ///////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////
 

@@ -97,12 +97,12 @@ public:
       default_response_(XOS_APP_CONSOLE_PROTOCOL_DEFAULT_RESPONSE),
     
       request_(default_request_), 
-      response_(default_response_),
+      response_(default_response_)/*,
 
       crlf2_endof_message_("\r\n\r\n"), 
       crlf_endof_message_("\r\n"), 
       cr_endof_message_("\r"), 
-      lf_endof_message_("\n") {
+      lf_endof_message_("\n")*/ {
     }
     virtual ~main_optt() {
     }
@@ -121,6 +121,8 @@ protected:
     typedef typename extends::reader_char_t reader_char_t;
     typedef typename extends::hex_read_to_string_t hex_read_to_string_t;
     typedef typename extends::hex_reader_t hex_reader_t;
+
+    typedef typename extends::file_reader_t file_reader_t;
 
     /// run
     int (derives::*run_)(int argc, char_t** argv, char_t** env);
@@ -143,10 +145,11 @@ protected:
         if (!(unequal = hello_request.compare(request))) {
             LOGGER_IS_LOGGED_INFO("...!(unequal = hello_request.compare(request))");
 
-            LOGGER_IS_LOGGED_INFO("all_prepare_response_to_hello_request_run(response, request, argc, argv, env)...");
+            LOGGER_IS_LOGGED_INFO("!(err = all_prepare_response_to_hello_request_run(response, request, argc, argv, env))...");
             if (!(err = all_prepare_response_to_hello_request_run(response, request, argc, argv, env))) {
-                LOGGER_IS_LOGGED_INFO("...all_prepare_response_to_hello_request_run(response, request, argc, argv, env)");
+                LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_response_to_hello_request_run(response, request, argc, argv, env))");
             } else {
+                LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_response_to_hello_request_run(response, request, argc, argv, env))");
             }
             return err;
         } else {
@@ -156,10 +159,11 @@ protected:
         if (!(unequal = restart_request.compare(request))) {
             LOGGER_IS_LOGGED_INFO("...!(unequal = restart_request.compare(request))");
 
-            LOGGER_IS_LOGGED_INFO("all_prepare_response_to_restart_request_run(response, request, argc, argv, env)...");
+            LOGGER_IS_LOGGED_INFO("!(err = all_prepare_response_to_restart_request_run(response, request, argc, argv, env))...");
             if (!(err = all_prepare_response_to_restart_request_run(response, request, argc, argv, env))) {
-                LOGGER_IS_LOGGED_INFO("...all_prepare_response_to_restart_request_run(response, request, argc, argv, env)");
+                LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_response_to_restart_request_run(response, request, argc, argv, env))");
             } else {
+                LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_response_to_restart_request_run(response, request, argc, argv, env))");
             }
             return err;
         } else {
@@ -169,10 +173,11 @@ protected:
         if (!(unequal = start_request.compare(request))) {
             LOGGER_IS_LOGGED_INFO("...!(unequal = start_request.compare(request))");
 
-            LOGGER_IS_LOGGED_INFO("all_prepare_response_to_start_request_run(response, request, argc, argv, env)...");
+            LOGGER_IS_LOGGED_INFO("!(err = all_prepare_response_to_start_request_run(response, request, argc, argv, env))...");
             if (!(err = all_prepare_response_to_start_request_run(response, request, argc, argv, env))) {
-                LOGGER_IS_LOGGED_INFO("...all_prepare_response_to_start_request_run(response, request, argc, argv, env)");
+                LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_response_to_start_request_run(response, request, argc, argv, env))");
             } else {
+                LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_response_to_start_request_run(response, request, argc, argv, env))");
             }
             return err;
         } else {
@@ -182,18 +187,20 @@ protected:
         if (!(unequal = stop_request.compare(request))) {
             LOGGER_IS_LOGGED_INFO("...!(unequal = stop_request.compare(request))");
 
-            LOGGER_IS_LOGGED_INFO("all_prepare_response_to_stop_request_run(response, request, argc, argv, env)...");
+            LOGGER_IS_LOGGED_INFO("!(err = all_prepare_response_to_stop_request_run(response, request, argc, argv, env))...");
             if (!(err = all_prepare_response_to_stop_request_run(response, request, argc, argv, env))) {
-                LOGGER_IS_LOGGED_INFO("...all_prepare_response_to_stop_request_run(response, request, argc, argv, env)");
+                LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_response_to_stop_request_run(response, request, argc, argv, env))");
             } else {
+                LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_response_to_stop_request_run(response, request, argc, argv, env))");
             }
             return err;
         } else {
         }
-        LOGGER_IS_LOGGED_INFO("!(err = extends::default_prepare_response_to_unknown_request_run(response, request, argc, argv, env))...");
+        LOGGER_IS_LOGGED_INFO("!(err = extends::default_prepare_response_to_unknown_request_run(response, request, argc, argv, env)))...");
         if (!(err = extends::default_prepare_response_to_request_run(response, request, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(err = extends::default_prepare_response_to_unknown_request_run(response, request, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("...!(" << err << " = extends::default_prepare_response_to_unknown_request_run(response, request, argc, argv, env)))");
         } else {
+            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = extends::default_prepare_response_to_unknown_request_run(response, request, argc, argv, env)))");
         }
         return err;
     }
@@ -601,6 +608,7 @@ protected:
         return (string_t&)default_response_;
     }
 
+    /*
     ///////////////////////////////////////////////////////////////////////
     /// ...endof_message
     /// ...
@@ -686,7 +694,8 @@ protected:
     /// ...
     /// ...endof_message
     ///////////////////////////////////////////////////////////////////////
-
+    */
+    
     ///////////////////////////////////////////////////////////////////////
     /// ...request
     virtual string_t& request() const {
@@ -704,9 +713,9 @@ protected:
              start_request_, start_response_, 
              stop_request_, stop_response_, 
              default_request_, default_response_,
-             request_, response_,
+             request_, response_/*,
              crlf2_endof_message_, crlf_endof_message_, 
-             cr_endof_message_, lf_endof_message_;
+             cr_endof_message_, lf_endof_message_*/;
 }; /// class main_optt 
 typedef main_optt<> main_opt;
 

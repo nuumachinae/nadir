@@ -67,6 +67,8 @@ protected:
     typedef typename extends::hex_read_to_string_t hex_read_to_string_t;
     typedef typename extends::hex_reader_t hex_reader_t;
 
+    typedef typename extends::file_reader_t file_reader_t;
+
     /// run
     int (derives::*run_)(int argc, char_t** argv, char_t** env);
     virtual int run(int argc, char_t** argv, char_t** env) {
